@@ -1,0 +1,21 @@
+<appian-plugin name="SQL To Excel Smart Service" key="com.appcino.as.sqltoexcel">
+
+  <plugin-info>
+    <description>SQL To Excel Smart Service</description>
+    <vendor name="Appian Corporation" url="http://www.appian.com" />
+    <version>1.4.0</version>
+    <application-version min="6.1.0" ></application-version>
+  </plugin-info>
+
+  <smart-service name="Excel Change Sheet Order" key="ExcelChangeSheetOrder"
+    class="com.appcino.as.sqltoexcel.ExcelWorkbookChangeSheetOrder" ></smart-service>
+
+  <smart-service name="Delete Excel Sheet" key="DeleteExcelSheet"
+    class="com.appcino.as.sqltoexcel.DeleteExcelSheet" ></smart-service>
+
+  <smart-service name="Import Excel To CDT" key="ImportExcelToCDT"
+    class="com.appcino.as.sqltoexcel.ImportExcelToCDT" />
+
+  <smart-service name="Export SQL To Excel" key="ExportSQLToExcelNew"
+    class="com.appcino.as.sqltoexcel.ExportSQLToExcelNew" />
+</appian-plugin>
