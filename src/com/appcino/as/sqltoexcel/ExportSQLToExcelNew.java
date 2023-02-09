@@ -271,6 +271,15 @@ public class ExportSQLToExcelNew extends AppianSmartService {
 
 			} finally {
 				out.close();
+				if(rs!= null) {
+					rs.close();
+				}
+				if(stmt != null) {
+					stmt.close();
+				}
+				if(con!= null) {
+					con.close();
+				}
 			}
 
 
