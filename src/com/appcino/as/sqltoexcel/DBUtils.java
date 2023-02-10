@@ -75,6 +75,12 @@ public class DBUtils {
 				}
 			} catch (Exception e) {
 			}
+			try {
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (Exception e) {
+			}
 		}
 	}
 
@@ -214,6 +220,12 @@ public class DBUtils {
 			try {
 				if (ps != null) {
 					ps.close();
+				}
+			} catch (Exception e) {
+			}
+			try {
+				if (conn != null) {
+					conn.close();
 				}
 			} catch (Exception e) {
 			}
