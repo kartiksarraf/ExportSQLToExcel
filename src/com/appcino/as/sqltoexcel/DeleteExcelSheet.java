@@ -77,9 +77,10 @@ public class DeleteExcelSheet extends AppianSmartService {
 				LOG.debug("Template filepath = " + cs.getInternalFilename(xls.getCurrentContentId()));
 
 				String documentPath = cs.getInternalFilename(xls.getCurrentContentId());
-				FileInputStream fis = new FileInputStream(documentPath);
-				wb = WorkbookFactory.create(fis);
-				fis.close();
+				try(FileInputStream fis = new FileInputStream(documentPath)) {
+					wb = WorkbookFactory.create(fis);
+					fis.close();
+				}
 			}
 			
 			//Trying to set the Sheet name of current sheet

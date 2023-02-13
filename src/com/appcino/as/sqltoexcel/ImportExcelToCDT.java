@@ -99,10 +99,11 @@ public class ImportExcelToCDT extends AppianSmartService {
 
 			String documentPath = xlsxCurrVersion.getInternalFilename();
 			LOG.debug("Document Path :"+documentPath);
-			FileInputStream fis = new FileInputStream(documentPath);
-			wb = new XSSFWorkbook(fis);
-			fis.close();
-
+			try(FileInputStream fis = new FileInputStream(documentPath)) {
+				wb = new XSSFWorkbook(fis);
+				fis.close();
+			}
+			
 			XSSFSheet sheet = wb.getSheetAt(sheetNumber.intValue());
 			
 			// get field names from first row
