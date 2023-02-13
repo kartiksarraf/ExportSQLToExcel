@@ -50,12 +50,14 @@ public class DocUtils {
 				newDocID = a.getId()[0];
 				String nvFilePath = cs.getInternalFilename(newDocID);
 				// write the content to filePath
-				FileOutputStream fos = new FileOutputStream(nvFilePath);
-				OutputStreamWriter writer = new OutputStreamWriter(fos);
-				writer.write(contents);
-				writer.flush();
-				writer.close();
-				fos.close();
+				try(FileOutputStream fos = new FileOutputStream(nvFilePath)) {
+					try(OutputStreamWriter writer = new OutputStreamWriter(fos)) {
+						writer.write(contents);
+						writer.flush();
+						writer.close();
+					}
+					fos.close();
+				}
 			} else {
 				if(isDebug){
 					LOG.debug("Creating a new document");
@@ -69,14 +71,16 @@ public class DocUtils {
 					d.setName(name);
 					d.setExtension(extension);
 					d.setFileSystemId(ContentConstants.ALLOCATE_FSID);
-					ContentOutputStream cos = cs.upload(d,ContentConstants.UNIQUE_FOR_PARENT);
-					OutputStreamWriter writer = new OutputStreamWriter(cos);
-					writer.write(contents);
-					writer.flush();
-					writer.close();
-					cos.close();
-					newDocID = cos.getContentId();
-					d.setId(newDocID);
+					try(ContentOutputStream cos = cs.upload(d,ContentConstants.UNIQUE_FOR_PARENT)){
+						try(OutputStreamWriter writer = new OutputStreamWriter(cos)) {
+							writer.write(contents);
+							writer.flush();
+							writer.close();
+						}
+						newDocID = cos.getContentId();
+						d.setId(newDocID);
+						cos.close();
+					}					
 				}
 				else {
 					if(isDebug){
@@ -87,12 +91,14 @@ public class DocUtils {
 					newDocID = a.getId()[0];
 					String nvFilePath = cs.getInternalFilename(newDocID);
 					// write the content to filePath
-					FileOutputStream fos = new FileOutputStream(nvFilePath);
-					OutputStreamWriter writer = new OutputStreamWriter(fos);
-					writer.write(contents);
-					writer.flush();
-					writer.close();
-					fos.close();
+					try(FileOutputStream fos = new FileOutputStream(nvFilePath)) {
+						try(OutputStreamWriter writer = new OutputStreamWriter(fos)) {
+							writer.write(contents);
+							writer.flush();
+							writer.close();
+						}
+						fos.close();
+					}
 				}
 			}
 			cs.setSizeOfDocumentVersion(newDocID);

@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -92,7 +93,9 @@ public class ExportSQLToExcelNew extends AppianSmartService {
 	@Override
 	public void run() throws SmartServiceException {
 		Locale currentLocale = smartServiceCtx.getUserLocale() != null ? smartServiceCtx.getUserLocale() : smartServiceCtx.getPrimaryLocale();
-
+		Connection con = null;
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
 		try {
 			Workbook wb = new XSSFWorkbook();
 			wb.createSheet("Sheet1");
@@ -104,9 +107,10 @@ public class ExportSQLToExcelNew extends AppianSmartService {
 				LOG.debug("Template filepath = " + cs.getInternalFilename(xls.getCurrentContentId()));
 
 				String documentPath = cs.getInternalFilename(xls.getCurrentContentId());
-				FileInputStream fis = new FileInputStream(documentPath);
-				wb = WorkbookFactory.create(fis);
-				fis.close();
+				try(FileInputStream fis = new FileInputStream(documentPath)) {
+					wb = WorkbookFactory.create(fis);
+					fis.close();
+				}				
 			}
 			
 			if(this.createNew || this.cloneSheet !=null){
@@ -157,20 +161,19 @@ public class ExportSQLToExcelNew extends AppianSmartService {
 			LOG.info (" Datasource = " + ds);
 
 
-			Connection con = ds.getConnection();
+			con = ds.getConnection();
 
 			//con.setAutoCommit(false);
 			LOG.info (" Connected to JNDI = " + con);
 
-			PreparedStatement stmt = con.prepareStatement(this.sql);
+			stmt = con.prepareStatement(this.sql);
 			LOG.info (" Statement = " + stmt);
 			stmt.setEscapeProcessing(true);
 			stmt.setQueryTimeout(60);
 			//--stmt.getResultSet();
 			//ResultSet rs = stmt.executeQuery();
 			
-			boolean gotResult = stmt.execute();
-			ResultSet rs = null;
+			boolean gotResult = stmt.execute();			
 			if(!gotResult){
 				LOG.info("No results returned");
 				} else {
@@ -264,24 +267,24 @@ public class ExportSQLToExcelNew extends AppianSmartService {
 			LOG.debug (" Document Created, filepath = " + cs.getInternalFilename(docId));
 
 
-			FileOutputStream out = new FileOutputStream(file);
+			try(FileOutputStream out = new FileOutputStream(file)) {
 
-			try{
-				wb.write(out);
-
-			} finally {
-				out.close();
-				if(rs!= null) {
-					rs.close();
-				}
-				if(stmt != null) {
-					stmt.close();
-				}
-				if(con!= null) {
-					con.close();
+				try{
+					wb.write(out);
+	
+				} finally {
+					out.close();
+					if(rs!= null) {
+						rs.close();
+					}
+					if(stmt != null) {
+						stmt.close();
+					}
+					if(con!= null) {
+						con.close();
+					}
 				}
 			}
-
 
 			LOG.debug(" File stream closed");
 
@@ -295,6 +298,21 @@ public class ExportSQLToExcelNew extends AppianSmartService {
 		} catch (Exception e) {
 			LOG.error(e, e);
 			throw createException(e, "error.export.general", e.getMessage());
+		} finally {
+			try {
+				if(con != null) {
+					con.close();
+				}
+				if(rs!= null) {
+					rs.close();
+				}
+				if(stmt != null) {
+					stmt.close();
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 	}
